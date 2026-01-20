@@ -137,8 +137,8 @@ class Simulator:
 
         # Calculate power for each turbine
         for turbine in layout.turbines:
-            # Get wakes affecting this turbine
-            affecting_wakes = all_wake_results.get(turbine.id, [])
+            # Get wakes affecting this turbine (use str(turbine.id) since dict keys are strings)
+            affecting_wakes = all_wake_results.get(str(turbine.id), [])
 
             # Combine wake deficits
             combined_deficit = self.superposition.combine_deficits(affecting_wakes)
