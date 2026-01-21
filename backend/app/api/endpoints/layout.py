@@ -73,8 +73,7 @@ async def calculate_distances(layout: TurbineLayout) -> dict[str, Any]:
 
     # Convert to serializable format
     distance_list = [
-        {"from": pair[0], "to": pair[1], "distance_m": dist}
-        for pair, dist in distances.items()
+        {"from": pair[0], "to": pair[1], "distance_m": dist} for pair, dist in distances.items()
     ]
 
     # Calculate statistics

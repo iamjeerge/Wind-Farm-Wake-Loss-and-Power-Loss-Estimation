@@ -28,9 +28,7 @@ class TestJensenWakeModel:
         # r = r0 + k*x, so (r1-r0) should be half of (r2-r0)
         assert abs((r1 - r0) * 2 - (r2 - r0)) < 0.1
 
-    def test_velocity_deficit_decreases_with_distance(
-        self, sample_turbine: Turbine
-    ) -> None:
+    def test_velocity_deficit_decreases_with_distance(self, sample_turbine: Turbine) -> None:
         """Test that velocity deficit decreases with distance."""
         model = JensenWakeModel()
 
@@ -80,9 +78,7 @@ class TestBastankhahWakeModel:
 
         assert centerline > offset_50m > offset_100m
 
-    def test_deficit_decreases_with_distance(
-        self, sample_turbine: Turbine
-    ) -> None:
+    def test_deficit_decreases_with_distance(self, sample_turbine: Turbine) -> None:
         """Test that deficit decreases with downstream distance."""
         model = BastankhahWakeModel()
 

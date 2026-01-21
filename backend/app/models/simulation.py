@@ -48,9 +48,7 @@ class SimulationConfig(BaseModel):
     )
 
     # Wind speed settings
-    wind_speed_bins: int = Field(
-        default=25, ge=5, le=50, description="Number of wind speed bins"
-    )
+    wind_speed_bins: int = Field(default=25, ge=5, le=50, description="Number of wind speed bins")
     wind_speed_min: float = Field(
         default=3.0, ge=0, le=10, description="Minimum wind speed (cut-in) in m/s"
     )
@@ -62,9 +60,7 @@ class SimulationConfig(BaseModel):
     include_wake_geometry: bool = Field(
         default=True, description="Generate wake geometry for visualization"
     )
-    compute_aep: bool = Field(
-        default=True, description="Compute Annual Energy Production"
-    )
+    compute_aep: bool = Field(default=True, description="Compute Annual Energy Production")
 
     @property
     def direction_step(self) -> float:
@@ -81,14 +77,10 @@ class DirectionalResult(BaseModel):
     """Results for a single wind direction."""
 
     direction: float = Field(ge=0, lt=360, description="Wind direction in degrees")
-    direction_probability: float = Field(
-        ge=0, le=1, description="Probability of this direction"
-    )
+    direction_probability: float = Field(ge=0, le=1, description="Probability of this direction")
 
     # Power results across wind speeds
-    farm_results: list[FarmPowerResult] = Field(
-        description="Farm results per wind speed bin"
-    )
+    farm_results: list[FarmPowerResult] = Field(description="Farm results per wind speed bin")
 
     # Wake geometries for visualization
     wake_geometries: list[WakeGeometry] = Field(
@@ -142,9 +134,7 @@ class SimulationResults(BaseModel):
     """Complete simulation results."""
 
     # Directional results
-    directional_results: list[DirectionalResult] = Field(
-        description="Results per wind direction"
-    )
+    directional_results: list[DirectionalResult] = Field(description="Results per wind direction")
 
     # AEP results
     aep: AEPResult | None = Field(default=None, description="Annual Energy Production results")
@@ -153,12 +143,8 @@ class SimulationResults(BaseModel):
     overall_wake_loss_percent: float = Field(
         ge=0, le=100, description="Overall weighted wake loss percentage"
     )
-    worst_direction: float = Field(
-        ge=0, lt=360, description="Direction with highest wake losses"
-    )
-    best_direction: float = Field(
-        ge=0, lt=360, description="Direction with lowest wake losses"
-    )
+    worst_direction: float = Field(ge=0, lt=360, description="Direction with highest wake losses")
+    best_direction: float = Field(ge=0, lt=360, description="Direction with lowest wake losses")
 
     # Computation metadata
     computation_time_seconds: float = Field(ge=0, description="Total computation time")

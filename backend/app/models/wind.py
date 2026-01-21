@@ -14,9 +14,7 @@ class WindCondition(BaseModel):
         float, Field(ge=0, lt=360, description="Wind direction in degrees (0=N, 90=E)")
     ]
     speed: Annotated[float, Field(ge=0, le=50, description="Wind speed in m/s")]
-    probability: float = Field(
-        default=1.0, ge=0, le=1, description="Probability of this condition"
-    )
+    probability: float = Field(default=1.0, ge=0, le=1, description="Probability of this condition")
 
     @property
     def direction_radians(self) -> float:
@@ -138,7 +136,8 @@ class WindData(BaseModel):
         if direction is not None and self.directional_weibull:
             # Find closest direction
             closest = min(
-                self.directional_weibull.keys(), key=lambda d: abs((d - direction + 180) % 360 - 180)
+                self.directional_weibull.keys(),
+                key=lambda d: abs((d - direction + 180) % 360 - 180),
             )
             return self.directional_weibull[closest]
         return self.weibull

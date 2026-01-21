@@ -168,9 +168,7 @@ class BaseWakeModel(ABC):
 
         part1 = r1**2 * math.acos((d**2 + r1**2 - r2**2) / (2 * d * r1))
         part2 = r2**2 * math.acos((d**2 + r2**2 - r1**2) / (2 * d * r2))
-        part3 = 0.5 * math.sqrt(
-            (-d + r1 + r2) * (d + r1 - r2) * (d - r1 + r2) * (d + r1 + r2)
-        )
+        part3 = 0.5 * math.sqrt((-d + r1 + r2) * (d + r1 - r2) * (d - r1 + r2) * (d + r1 + r2))
 
         intersection_area = part1 + part2 - part3
         rotor_area = math.pi * rotor_radius**2

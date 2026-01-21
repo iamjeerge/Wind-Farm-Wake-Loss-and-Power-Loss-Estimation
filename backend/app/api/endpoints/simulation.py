@@ -33,9 +33,7 @@ class SimulationRequest(BaseModel):
 
     layout: TurbineLayout = Field(description="Wind farm layout")
     wind_data: WindData = Field(description="Wind data")
-    config: SimulationConfig | None = Field(
-        default=None, description="Simulation configuration"
-    )
+    config: SimulationConfig | None = Field(default=None, description="Simulation configuration")
     name: str = Field(default="Simulation", description="Simulation name")
     compute_aep: bool = Field(default=True, description="Whether to compute AEP")
 
@@ -232,9 +230,10 @@ async def full_simulation(request: FullSimulationRequest) -> dict[str, Any]:
     wind_data = request.wind_data
     if wind_data is None:
         from app.models.wind import WindRose, WindRoseEntry, WeibullParameters
+
         # Create uniform wind rose
         entries = [
-            WindRoseEntry(direction=d, probability=1.0/36, sector_width=10.0)
+            WindRoseEntry(direction=d, probability=1.0 / 36, sector_width=10.0)
             for d in range(0, 360, 10)
         ]
         wind_data = WindData(
@@ -269,7 +268,9 @@ async def full_simulation(request: FullSimulationRequest) -> dict[str, Any]:
             "turbine_id": name,
             "turbine_name": name,
             "power_kw": totals["power_sum"] / totals["count"] if totals["count"] > 0 else 0,
-            "wake_deficit": (totals["loss_sum"] / totals["count"]) / 100 if totals["count"] > 0 else 0,
+            "wake_deficit": (
+                (totals["loss_sum"] / totals["count"]) / 100 if totals["count"] > 0 else 0
+            ),
             "effective_wind_speed": 10.0,  # Average approximation
         }
         for name, totals in turbine_totals.items()
@@ -279,7 +280,13 @@ async def full_simulation(request: FullSimulationRequest) -> dict[str, Any]:
     directional_results = [
         {
             "direction": dir_result.direction,
-            "power_mw": sum(fr.total_wake_affected_power for fr in dir_result.farm_results) / 1000 / len(dir_result.farm_results) if dir_result.farm_results else 0,
+            "power_mw": (
+                sum(fr.total_wake_affected_power for fr in dir_result.farm_results)
+                / 1000
+                / len(dir_result.farm_results)
+                if dir_result.farm_results
+                else 0
+            ),
             "wake_loss_percent": dir_result.mean_wake_loss_percent,
         }
         for dir_result in results.directional_results
@@ -355,9 +362,7 @@ async def _run_simulation(run_id: UUID, compute_aep: bool) -> None:
         # Calculate AEP if requested
         if compute_aep:
             aep_calculator = AEPCalculator()
-            results.aep = aep_calculator.calculate_aep(
-                results, run.layout, run.wind_data
-            )
+            results.aep = aep_calculator.calculate_aep(results, run.layout, run.wind_data)
 
         run.results = results
         run.status = SimulationStatus.COMPLETED

@@ -65,9 +65,7 @@ class FarmAggregator:
 
         # Count statistics
         turbines_operating = sum(1 for t in turbine_results if t.is_operating)
-        turbines_in_wake = sum(
-            1 for t in turbine_results if t.combined_velocity_deficit > 0
-        )
+        turbines_in_wake = sum(1 for t in turbine_results if t.combined_velocity_deficit > 0)
 
         # Individual loss statistics
         loss_percents = [t.power_loss_percent for t in turbine_results if t.is_operating]
@@ -133,12 +131,8 @@ class FarmAggregator:
         weighted_free_stream = sum(
             r.total_free_stream_power * w for r, w in zip(farm_results, norm_weights)
         )
-        weighted_loss = sum(
-            r.total_power_loss * w for r, w in zip(farm_results, norm_weights)
-        )
-        weighted_cf = sum(
-            r.capacity_factor * w for r, w in zip(farm_results, norm_weights)
-        )
+        weighted_loss = sum(r.total_power_loss * w for r, w in zip(farm_results, norm_weights))
+        weighted_cf = sum(r.capacity_factor * w for r, w in zip(farm_results, norm_weights))
 
         if weighted_free_stream > 0:
             weighted_loss_percent = (weighted_loss / weighted_free_stream) * 100
@@ -169,9 +163,7 @@ class FarmAggregator:
             Ranked list of turbine loss summaries
         """
         if metric == "power_loss":
-            sorted_results = sorted(
-                turbine_results, key=lambda t: t.power_loss, reverse=True
-            )
+            sorted_results = sorted(turbine_results, key=lambda t: t.power_loss, reverse=True)
         elif metric == "power_loss_percent":
             sorted_results = sorted(
                 turbine_results, key=lambda t: t.power_loss_percent, reverse=True

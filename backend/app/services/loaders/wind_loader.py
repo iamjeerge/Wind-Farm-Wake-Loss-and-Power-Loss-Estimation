@@ -138,9 +138,7 @@ class WindLoader:
             scale=float(df[scale_col].iloc[0]),
         )
 
-    def load_directional_weibull(
-        self, file_path: str | Path
-    ) -> dict[float, WeibullParameters]:
+    def load_directional_weibull(self, file_path: str | Path) -> dict[float, WeibullParameters]:
         """
         Load direction-specific Weibull parameters.
 
