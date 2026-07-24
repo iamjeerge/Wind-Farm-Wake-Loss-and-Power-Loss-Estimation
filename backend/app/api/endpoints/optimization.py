@@ -18,7 +18,6 @@ from app.services.simulation.aep_calculator import AEPCalculator
 from app.services.wake import JensenWakeModel, BastankhahWakeModel
 from app.services.power import PowerCalculator
 
-
 router = APIRouter(prefix="/optimization", tags=["Optimization"])
 
 
@@ -109,9 +108,9 @@ async def run_optimization(request: OptimizationRequest) -> OptimizationResponse
     # Create constraints
     constraints = LayoutConstraints(
         min_spacing_diameters=request.min_spacing_diameters,
-        rotor_diameter=request.layout.turbines[0].rotor_diameter
-        if request.layout.turbines
-        else 126.0,
+        rotor_diameter=(
+            request.layout.turbines[0].rotor_diameter if request.layout.turbines else 126.0
+        ),
         boundary_buffer=request.boundary_buffer,
         max_turbines=len(request.layout.turbines),
     )
@@ -205,9 +204,9 @@ async def quick_optimize(request: QuickOptimizeRequest) -> QuickOptimizeResponse
 
     constraints = LayoutConstraints(
         min_spacing_diameters=5.0,
-        rotor_diameter=request.layout.turbines[0].rotor_diameter
-        if request.layout.turbines
-        else 126.0,
+        rotor_diameter=(
+            request.layout.turbines[0].rotor_diameter if request.layout.turbines else 126.0
+        ),
     )
 
     fitness_fn = create_fitness_function(

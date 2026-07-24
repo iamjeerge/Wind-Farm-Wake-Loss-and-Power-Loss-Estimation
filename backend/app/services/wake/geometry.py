@@ -63,9 +63,7 @@ class WakeGeometryGenerator:
 
         # Calculate expansion angle
         if length > 0:
-            expansion_angle = math.degrees(
-                math.atan((final_radius - initial_radius) / length)
-            )
+            expansion_angle = math.degrees(math.atan((final_radius - initial_radius) / length))
         else:
             expansion_angle = 0.0
 

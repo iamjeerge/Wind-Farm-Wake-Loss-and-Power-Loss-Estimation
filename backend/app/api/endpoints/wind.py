@@ -76,9 +76,7 @@ async def fit_weibull(speeds: list[float]) -> WeibullParameters:
     Provide a list of wind speed observations.
     """
     if len(speeds) < 10:
-        raise HTTPException(
-            status_code=400, detail="Need at least 10 speed observations"
-        )
+        raise HTTPException(status_code=400, detail="Need at least 10 speed observations")
 
     try:
         weibull = WindLoader.fit_weibull_from_speeds(speeds)
@@ -96,9 +94,7 @@ async def get_uniform_wind_rose(sectors: int = 36) -> WindRose:
         sectors: Number of direction sectors (default: 36 = 10° steps)
     """
     if sectors < 4 or sectors > 72:
-        raise HTTPException(
-            status_code=400, detail="Sectors must be between 4 and 72"
-        )
+        raise HTTPException(status_code=400, detail="Sectors must be between 4 and 72")
 
     return WindLoader.create_uniform_wind_rose(sectors)
 
@@ -127,10 +123,10 @@ async def get_sample_wind_data() -> WindData:
 
     # Typical North Sea wind rose (prevailing westerly winds)
     entries = [
-        WindRoseEntry(direction=0, probability=0.05),    # N
-        WindRoseEntry(direction=30, probability=0.04),   # NNE
-        WindRoseEntry(direction=60, probability=0.03),   # ENE
-        WindRoseEntry(direction=90, probability=0.04),   # E
+        WindRoseEntry(direction=0, probability=0.05),  # N
+        WindRoseEntry(direction=30, probability=0.04),  # NNE
+        WindRoseEntry(direction=60, probability=0.03),  # ENE
+        WindRoseEntry(direction=90, probability=0.04),  # E
         WindRoseEntry(direction=120, probability=0.05),  # ESE
         WindRoseEntry(direction=150, probability=0.06),  # SSE
         WindRoseEntry(direction=180, probability=0.08),  # S
@@ -163,9 +159,7 @@ async def calculate_wind_statistics(wind_data: WindData) -> dict[str, Any]:
     prob_below_25 = weibull.cdf(25.0)  # Below cut-out
 
     # Direction statistics
-    dominant_direction = max(
-        wind_data.wind_rose.entries, key=lambda e: e.probability
-    )
+    dominant_direction = max(wind_data.wind_rose.entries, key=lambda e: e.probability)
 
     return {
         "weibull": {

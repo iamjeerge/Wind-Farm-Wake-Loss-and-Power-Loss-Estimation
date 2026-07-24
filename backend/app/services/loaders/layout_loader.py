@@ -19,7 +19,14 @@ class LayoutLoader:
     """Service for loading and processing turbine layout data."""
 
     # Expected CSV columns
-    REQUIRED_COLUMNS = {"name", "latitude", "longitude", "hub_height", "rotor_diameter", "rated_power"}
+    REQUIRED_COLUMNS = {
+        "name",
+        "latitude",
+        "longitude",
+        "hub_height",
+        "rotor_diameter",
+        "rated_power",
+    }
     OPTIONAL_COLUMNS = {"thrust_coefficient"}
 
     def __init__(self) -> None:

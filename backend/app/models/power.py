@@ -51,9 +51,7 @@ class FarmPowerResult(BaseModel):
     wind_speed: float = Field(ge=0, description="Wind speed in m/s")
 
     # Turbine results
-    turbine_results: list[TurbinePowerResult] = Field(
-        description="Per-turbine power results"
-    )
+    turbine_results: list[TurbinePowerResult] = Field(description="Per-turbine power results")
 
     # Aggregated values
     total_free_stream_power: float = Field(ge=0, description="Total power without wakes in kW")
@@ -65,9 +63,7 @@ class FarmPowerResult(BaseModel):
     farm_wake_loss_percent: Annotated[
         float, Field(ge=0, le=100, description="Farm-level wake loss in %")
     ]
-    capacity_factor: Annotated[
-        float, Field(ge=0, le=100, description="Capacity factor in %")
-    ]
+    capacity_factor: Annotated[float, Field(ge=0, le=100, description="Capacity factor in %")]
 
     # Statistics
     turbines_operating: int = Field(ge=0, description="Number of operating turbines")
@@ -89,13 +85,9 @@ class FarmPowerResult(BaseModel):
         if by == "power_loss":
             return sorted(self.turbine_results, key=lambda t: t.power_loss, reverse=True)
         elif by == "power_loss_percent":
-            return sorted(
-                self.turbine_results, key=lambda t: t.power_loss_percent, reverse=True
-            )
+            return sorted(self.turbine_results, key=lambda t: t.power_loss_percent, reverse=True)
         elif by == "power":
-            return sorted(
-                self.turbine_results, key=lambda t: t.wake_affected_power, reverse=True
-            )
+            return sorted(self.turbine_results, key=lambda t: t.wake_affected_power, reverse=True)
         else:
             return self.turbine_results
 

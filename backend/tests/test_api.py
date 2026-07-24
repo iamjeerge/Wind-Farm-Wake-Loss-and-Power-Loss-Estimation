@@ -65,12 +65,12 @@ class TestWindEndpoints:
         wind_data = {
             "wind_rose": {
                 "entries": [
-                    {"direction": i * 30, "probability": 1/12, "sector_width": 30}
+                    {"direction": i * 30, "probability": 1 / 12, "sector_width": 30}
                     for i in range(12)
                 ],
-                "name": "Test"
+                "name": "Test",
             },
-            "weibull": {"shape": 2.0, "scale": 9.0}
+            "weibull": {"shape": 2.0, "scale": 9.0},
         }
 
         response = client.post("/api/v1/wind/statistics", json=wind_data)

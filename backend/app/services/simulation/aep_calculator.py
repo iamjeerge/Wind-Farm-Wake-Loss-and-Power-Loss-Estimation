@@ -67,14 +67,13 @@ class AEPCalculator:
                 # Convert power (kW) to energy (MWh) over year
                 # Energy = Power * Hours * Probability
                 gross_mwh = (
-                    farm_result.total_free_stream_power / 1000  # kW to MW
+                    farm_result.total_free_stream_power
+                    / 1000  # kW to MW
                     * self.HOURS_PER_YEAR
                     * joint_prob
                 )
                 net_mwh = (
-                    farm_result.total_wake_affected_power / 1000
-                    * self.HOURS_PER_YEAR
-                    * joint_prob
+                    farm_result.total_wake_affected_power / 1000 * self.HOURS_PER_YEAR * joint_prob
                 )
 
                 gross_energy += gross_mwh
@@ -84,14 +83,10 @@ class AEPCalculator:
                 for turbine_result in farm_result.turbine_results:
                     name = turbine_result.turbine_name
                     turbine_gross[name] += (
-                        turbine_result.free_stream_power / 1000
-                        * self.HOURS_PER_YEAR
-                        * joint_prob
+                        turbine_result.free_stream_power / 1000 * self.HOURS_PER_YEAR * joint_prob
                     )
                     turbine_net[name] += (
-                        turbine_result.wake_affected_power / 1000
-                        * self.HOURS_PER_YEAR
-                        * joint_prob
+                        turbine_result.wake_affected_power / 1000 * self.HOURS_PER_YEAR * joint_prob
                     )
 
         # Calculate metrics
@@ -122,8 +117,7 @@ class AEPCalculator:
 
         # Per-turbine wake losses
         turbine_wake_loss = {
-            name: turbine_gross[name] - turbine_net[name]
-            for name in turbine_gross
+            name: turbine_gross[name] - turbine_net[name] for name in turbine_gross
         }
 
         return AEPResult(

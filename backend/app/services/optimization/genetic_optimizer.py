@@ -102,9 +102,7 @@ class GeneticOptimizer:
         bounds: Tuple[Tuple[float, float], Tuple[float, float]],
     ) -> None:
         """Set boundary constraint."""
-        self._constraint_list.append(
-            BoundaryConstraint(bounds, self.constraints.boundary_buffer)
-        )
+        self._constraint_list.append(BoundaryConstraint(bounds, self.constraints.boundary_buffer))
         self._bounds = bounds
 
     def optimize(
@@ -233,7 +231,11 @@ class GeneticOptimizer:
             improvement_percent=improvement,
             generations_run=gen + 1,
             fitness_history=fitness_history,
-            convergence_generation=best_generation if no_improvement_count >= self.config.early_stopping_generations else None,
+            convergence_generation=(
+                best_generation
+                if no_improvement_count >= self.config.early_stopping_generations
+                else None
+            ),
         )
 
     def _layout_to_positions(self, layout: TurbineLayout) -> np.ndarray:
@@ -243,9 +245,7 @@ class GeneticOptimizer:
             positions.append([t.x, t.y])
         return np.array(positions)
 
-    def _positions_to_layout(
-        self, positions: np.ndarray, template: TurbineLayout
-    ) -> TurbineLayout:
+    def _positions_to_layout(self, positions: np.ndarray, template: TurbineLayout) -> TurbineLayout:
         """Convert positions back to layout."""
         new_turbines = []
         for i, t in enumerate(template.turbines):
@@ -285,9 +285,7 @@ class GeneticOptimizer:
 
         return population
 
-    def _evaluate_fitness(
-        self, positions: np.ndarray, template: TurbineLayout
-    ) -> float:
+    def _evaluate_fitness(self, positions: np.ndarray, template: TurbineLayout) -> float:
         """Evaluate fitness of a layout."""
         # Calculate constraint penalty
         total_penalty = 0.0
@@ -307,9 +305,7 @@ class GeneticOptimizer:
 
         return fitness
 
-    def _select(
-        self, population: List[np.ndarray], fitness: np.ndarray
-    ) -> List[np.ndarray]:
+    def _select(self, population: List[np.ndarray], fitness: np.ndarray) -> List[np.ndarray]:
         """Select parents for next generation."""
         if self.config.selection_method == SelectionMethod.TOURNAMENT:
             return self._tournament_selection(population, fitness)
@@ -362,17 +358,13 @@ class GeneticOptimizer:
         else:
             return self._blend_crossover(parent1, parent2)
 
-    def _uniform_crossover(
-        self, parent1: np.ndarray, parent2: np.ndarray
-    ) -> np.ndarray:
+    def _uniform_crossover(self, parent1: np.ndarray, parent2: np.ndarray) -> np.ndarray:
         """Uniform crossover - each gene from random parent."""
         mask = self.rng.random(parent1.shape) < 0.5
         child = np.where(mask, parent1, parent2)
         return child
 
-    def _single_point_crossover(
-        self, parent1: np.ndarray, parent2: np.ndarray
-    ) -> np.ndarray:
+    def _single_point_crossover(self, parent1: np.ndarray, parent2: np.ndarray) -> np.ndarray:
         """Single point crossover."""
         point = self.rng.integers(1, len(parent1))
         child = np.vstack([parent1[:point], parent2[point:]])

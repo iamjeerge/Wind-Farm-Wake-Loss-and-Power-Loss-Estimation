@@ -109,8 +109,8 @@ class PowerCalculator:
         # Use or create generic curve based on rated power
         rated_power = turbine.rated_power
         if rated_power not in self._generic_curves:
-            self._generic_curves[rated_power] = (
-                PowerCurveLoader.create_generic_power_curve(rated_power)
+            self._generic_curves[rated_power] = PowerCurveLoader.create_generic_power_curve(
+                rated_power
             )
 
         return self._generic_curves[rated_power]

@@ -65,8 +65,7 @@ def sample_layout() -> TurbineLayout:
 def sample_wind_rose() -> WindRose:
     """Create a sample wind rose."""
     entries = [
-        WindRoseEntry(direction=i * 30, probability=1/12, sector_width=30)
-        for i in range(12)
+        WindRoseEntry(direction=i * 30, probability=1 / 12, sector_width=30) for i in range(12)
     ]
     return WindRose(entries=entries, name="Test Wind Rose")
 

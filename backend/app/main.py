@@ -19,11 +19,11 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Application lifespan handler."""
     # Startup
     print(f"Starting {settings.APP_NAME} v{settings.VERSION}")
-    
+
     # Initialize database
     print("Initializing database...")
     await init_db()
-    
+
     # Seed if AUTO_SEED is set
     if os.getenv("AUTO_SEED", "false").lower() == "true":
         print("Seeding database with fixtures...")
@@ -33,9 +33,9 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
                 print(f"✅ Seeded: {results['wind_farms']} farms, {results['turbines']} turbines")
             except Exception as e:
                 print(f"⚠️ Seeding skipped (may already exist): {e}")
-    
+
     yield
-    
+
     # Shutdown
     print("Shutting down...")
     await close_db()

@@ -50,9 +50,7 @@ class Simulator:
         self.superposition = WakeSuperposition(self.config.wake_params.superposition)
         self.power_calculator = PowerCalculator()
         self.farm_aggregator = FarmAggregator()
-        self.geometry_generator = WakeGeometryGenerator(
-            self.wake_model, self.config.wake_params
-        )
+        self.geometry_generator = WakeGeometryGenerator(self.wake_model, self.config.wake_params)
 
     def run(
         self,
@@ -88,9 +86,7 @@ class Simulator:
                 continue
 
             # Run simulation for this direction
-            dir_result = self._simulate_direction(
-                layout, wind_data, direction, direction_prob
-            )
+            dir_result = self._simulate_direction(layout, wind_data, direction, direction_prob)
             directional_results.append(dir_result)
 
             # Update progress
@@ -154,9 +150,7 @@ class Simulator:
             turbine_results.append(power_result)
 
         # Aggregate farm results
-        return self.farm_aggregator.aggregate(
-            turbine_results, wind_direction, wind_speed
-        )
+        return self.farm_aggregator.aggregate(turbine_results, wind_direction, wind_speed)
 
     def _simulate_direction(
         self,
@@ -192,15 +186,11 @@ class Simulator:
         # Generate wake geometries if enabled
         wake_geometries: list[WakeGeometry] = []
         if self.config.include_wake_geometry:
-            wake_geometries = self.geometry_generator.generate_all_wakes(
-                layout, direction
-            )
+            wake_geometries = self.geometry_generator.generate_all_wakes(layout, direction)
 
         # Calculate directional statistics
         mean_loss = self._calculate_mean_wake_loss(farm_results)
-        mean_power = sum(r.total_wake_affected_power for r in farm_results) / len(
-            farm_results
-        )
+        mean_power = sum(r.total_wake_affected_power for r in farm_results) / len(farm_results)
 
         return DirectionalResult(
             direction=direction,
@@ -222,9 +212,7 @@ class Simulator:
 
         Returns dictionary mapping downstream turbine ID to list of wake effects.
         """
-        wake_results: dict[str, list[WakeResult]] = {
-            str(t.id): [] for t in layout.turbines
-        }
+        wake_results: dict[str, list[WakeResult]] = {str(t.id): [] for t in layout.turbines}
 
         # Check all pairs
         for upstream in layout.turbines:
@@ -233,9 +221,7 @@ class Simulator:
                     continue
 
                 # Check if downstream is actually downstream
-                if not self.wake_model.is_downstream(
-                    upstream, downstream, wind_direction
-                ):
+                if not self.wake_model.is_downstream(upstream, downstream, wind_direction):
                     continue
 
                 # Calculate wake effect
@@ -258,9 +244,7 @@ class Simulator:
             d += step
         return directions
 
-    def _generate_speed_bins(
-        self, weibull: "WeibullParameters"
-    ) -> list[tuple[float, float]]:
+    def _generate_speed_bins(self, weibull: "WeibullParameters") -> list[tuple[float, float]]:
         """Generate wind speed bins with probabilities."""
         from app.services.loaders.wind_loader import WindLoader
 
@@ -271,24 +255,19 @@ class Simulator:
             self.config.wind_speed_max,
         )
 
-    def _calculate_mean_wake_loss(
-        self, farm_results: list[FarmPowerResult]
-    ) -> float:
+    def _calculate_mean_wake_loss(self, farm_results: list[FarmPowerResult]) -> float:
         """Calculate mean wake loss across wind speeds."""
         if not farm_results:
             return 0.0
         return sum(r.farm_wake_loss_percent for r in farm_results) / len(farm_results)
 
-    def _calculate_overall_wake_loss(
-        self, directional_results: list[DirectionalResult]
-    ) -> float:
+    def _calculate_overall_wake_loss(self, directional_results: list[DirectionalResult]) -> float:
         """Calculate overall probability-weighted wake loss."""
         if not directional_results:
             return 0.0
 
         total_weighted_loss = sum(
-            r.mean_wake_loss_percent * r.direction_probability
-            for r in directional_results
+            r.mean_wake_loss_percent * r.direction_probability for r in directional_results
         )
         total_prob = sum(r.direction_probability for r in directional_results)
 

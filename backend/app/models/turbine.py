@@ -111,51 +111,53 @@ class TurbineLayout(BaseModel):
         """Compute local x,y coordinates for all turbines from lat/lon."""
         if not self.turbines:
             return self
-        
+
         # Use reference point or compute center
         ref_lat = self.reference_latitude
         ref_lon = self.reference_longitude
-        
+
         if ref_lat is None:
             ref_lat = sum(t.latitude for t in self.turbines) / len(self.turbines)
         if ref_lon is None:
             ref_lon = sum(t.longitude for t in self.turbines) / len(self.turbines)
-        
+
         # Convert each turbine's lat/lon to local x,y coordinates
         for turbine in self.turbines:
             x, y = self._latlon_to_xy(turbine.latitude, turbine.longitude, ref_lat, ref_lon)
             turbine.x = x
             turbine.y = y
-        
+
         return self
 
     @staticmethod
-    def _latlon_to_xy(lat: float, lon: float, ref_lat: float, ref_lon: float) -> tuple[float, float]:
+    def _latlon_to_xy(
+        lat: float, lon: float, ref_lat: float, ref_lon: float
+    ) -> tuple[float, float]:
         """
         Convert lat/lon to local x,y coordinates in meters.
-        
+
         Uses equirectangular approximation which is accurate for small areas.
         X is East-West (positive = East)
         Y is North-South (positive = North)
         """
         # Earth radius in meters
         R = 6371000
-        
+
         # Convert to radians
         lat_rad = math.radians(lat)
         ref_lat_rad = math.radians(ref_lat)
-        
+
         # Delta in degrees
         dlat = lat - ref_lat
         dlon = lon - ref_lon
-        
+
         # Convert to meters
         # Y: 1 degree latitude ≈ 111km
         y = dlat * (math.pi / 180) * R
-        
+
         # X: 1 degree longitude varies with latitude
         x = dlon * (math.pi / 180) * R * math.cos(ref_lat_rad)
-        
+
         return x, y
 
     @property

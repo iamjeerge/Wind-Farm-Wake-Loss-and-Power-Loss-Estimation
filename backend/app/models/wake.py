@@ -19,9 +19,7 @@ class WakeModelType(str, Enum):
 class WakeParameters(BaseModel):
     """Parameters for wake calculations."""
 
-    model_type: WakeModelType = Field(
-        default=WakeModelType.JENSEN, description="Wake model to use"
-    )
+    model_type: WakeModelType = Field(default=WakeModelType.JENSEN, description="Wake model to use")
 
     # Jensen model parameters
     wake_decay_coefficient: float = Field(
@@ -46,9 +44,7 @@ class WakeParameters(BaseModel):
     )
 
     # Common parameters
-    air_density: float = Field(
-        default=1.225, ge=0.9, le=1.5, description="Air density in kg/m³"
-    )
+    air_density: float = Field(default=1.225, ge=0.9, le=1.5, description="Air density in kg/m³")
 
     # Superposition method
     superposition: str = Field(
@@ -67,9 +63,7 @@ class WakeResult(BaseModel):
 
     # Wake characteristics
     distance: float = Field(ge=0, description="Distance between turbines in meters")
-    distance_rotor_diameters: float = Field(
-        ge=0, description="Distance in rotor diameters"
-    )
+    distance_rotor_diameters: float = Field(ge=0, description="Distance in rotor diameters")
     lateral_offset: float = Field(description="Lateral offset from wake centerline in meters")
     wake_radius: float = Field(ge=0, description="Wake radius at downstream position in meters")
 

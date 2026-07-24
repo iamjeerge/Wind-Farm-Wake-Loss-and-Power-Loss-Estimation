@@ -53,9 +53,7 @@ async def export_csv(run_id: UUID) -> StreamingResponse:
     return StreamingResponse(
         buffer,
         media_type="text/csv",
-        headers={
-            "Content-Disposition": f"attachment; filename=simulation_{run_id}_results.csv"
-        },
+        headers={"Content-Disposition": f"attachment; filename=simulation_{run_id}_results.csv"},
     )
 
 
@@ -121,9 +119,7 @@ async def export_json(run_id: UUID) -> StreamingResponse:
     return StreamingResponse(
         buffer,
         media_type="application/json",
-        headers={
-            "Content-Disposition": f"attachment; filename=simulation_{run_id}_results.json"
-        },
+        headers={"Content-Disposition": f"attachment; filename=simulation_{run_id}_results.json"},
     )
 
 
@@ -160,9 +156,7 @@ async def export_summary(run_id: UUID) -> dict[str, Any]:
                 "net_mwh": round(run.results.aep.net_aep_mwh, 1),
                 "loss_mwh": round(run.results.aep.wake_loss_mwh, 1),
                 "loss_percent": round(run.results.aep.wake_loss_percent, 2),
-                "net_capacity_factor_percent": round(
-                    run.results.aep.net_capacity_factor, 2
-                ),
+                "net_capacity_factor_percent": round(run.results.aep.net_capacity_factor, 2),
                 "full_load_hours": round(run.results.aep.net_full_load_hours, 0),
             }
 
@@ -184,9 +178,7 @@ async def export_pdf(run_id: UUID) -> StreamingResponse:
         return StreamingResponse(
             pdf_buffer,
             media_type="application/pdf",
-            headers={
-                "Content-Disposition": f"attachment; filename=simulation_{run_id}_report.pdf"
-            },
+            headers={"Content-Disposition": f"attachment; filename=simulation_{run_id}_report.pdf"},
         )
     except ImportError:
         raise HTTPException(
@@ -227,7 +219,7 @@ def _generate_pdf_report(run: SimulationRun) -> io.BytesIO:
     )
 
     buffer = io.BytesIO()
-    doc = SimpleDocTemplate(buffer, pagesize=A4, topMargin=20*mm, bottomMargin=20*mm)
+    doc = SimpleDocTemplate(buffer, pagesize=A4, topMargin=20 * mm, bottomMargin=20 * mm)
     styles = getSampleStyleSheet()
     story = []
 
@@ -259,18 +251,20 @@ def _generate_pdf_report(run: SimulationRun) -> io.BytesIO:
         ["Number of Turbines", str(run.layout.turbine_count)],
         ["Total Rated Power", f"{run.layout.total_rated_power / 1000:.1f} MW"],
     ]
-    farm_table = Table(farm_data, colWidths=[100*mm, 60*mm])
+    farm_table = Table(farm_data, colWidths=[100 * mm, 60 * mm])
     farm_table.setStyle(
-        TableStyle([
-            ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#2d3748")),
-            ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
-            ("ALIGN", (0, 0), (-1, -1), "LEFT"),
-            ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
-            ("FONTSIZE", (0, 0), (-1, 0), 11),
-            ("BOTTOMPADDING", (0, 0), (-1, 0), 12),
-            ("BACKGROUND", (0, 1), (-1, -1), colors.HexColor("#f7fafc")),
-            ("GRID", (0, 0), (-1, -1), 1, colors.HexColor("#e2e8f0")),
-        ])
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#2d3748")),
+                ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+                ("ALIGN", (0, 0), (-1, -1), "LEFT"),
+                ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                ("FONTSIZE", (0, 0), (-1, 0), 11),
+                ("BOTTOMPADDING", (0, 0), (-1, 0), 12),
+                ("BACKGROUND", (0, 1), (-1, -1), colors.HexColor("#f7fafc")),
+                ("GRID", (0, 0), (-1, -1), 1, colors.HexColor("#e2e8f0")),
+            ]
+        )
     )
     story.append(farm_table)
     story.append(Spacer(1, 20))
@@ -289,28 +283,32 @@ def _generate_pdf_report(run: SimulationRun) -> io.BytesIO:
         ]
 
         if run.results.aep:
-            results_data.extend([
-                ["Gross AEP", f"{run.results.aep.gross_aep_mwh:,.0f} MWh"],
-                ["Net AEP", f"{run.results.aep.net_aep_mwh:,.0f} MWh"],
-                ["AEP Loss", f"{run.results.aep.wake_loss_mwh:,.0f} MWh"],
+            results_data.extend(
                 [
-                    "Net Capacity Factor",
-                    f"{run.results.aep.net_capacity_factor:.1f}%",
-                ],
-            ])
+                    ["Gross AEP", f"{run.results.aep.gross_aep_mwh:,.0f} MWh"],
+                    ["Net AEP", f"{run.results.aep.net_aep_mwh:,.0f} MWh"],
+                    ["AEP Loss", f"{run.results.aep.wake_loss_mwh:,.0f} MWh"],
+                    [
+                        "Net Capacity Factor",
+                        f"{run.results.aep.net_capacity_factor:.1f}%",
+                    ],
+                ]
+            )
 
-        results_table = Table(results_data, colWidths=[100*mm, 60*mm])
+        results_table = Table(results_data, colWidths=[100 * mm, 60 * mm])
         results_table.setStyle(
-            TableStyle([
-                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#2d3748")),
-                ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
-                ("ALIGN", (0, 0), (-1, -1), "LEFT"),
-                ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
-                ("FONTSIZE", (0, 0), (-1, 0), 11),
-                ("BOTTOMPADDING", (0, 0), (-1, 0), 12),
-                ("BACKGROUND", (0, 1), (-1, -1), colors.HexColor("#f7fafc")),
-                ("GRID", (0, 0), (-1, -1), 1, colors.HexColor("#e2e8f0")),
-            ])
+            TableStyle(
+                [
+                    ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#2d3748")),
+                    ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+                    ("ALIGN", (0, 0), (-1, -1), "LEFT"),
+                    ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                    ("FONTSIZE", (0, 0), (-1, 0), 11),
+                    ("BOTTOMPADDING", (0, 0), (-1, 0), 12),
+                    ("BACKGROUND", (0, 1), (-1, -1), colors.HexColor("#f7fafc")),
+                    ("GRID", (0, 0), (-1, -1), 1, colors.HexColor("#e2e8f0")),
+                ]
+            )
         )
         story.append(results_table)
 

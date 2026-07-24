@@ -8,7 +8,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import async_session_maker, init_db
 from app.db.models import WindFarm, Turbine, WindRose, PowerCurve
 
-
 # Sample North Sea wind farm layout (4x5 grid)
 SAMPLE_WIND_FARM = {
     "name": "North Sea Demo Farm",
@@ -25,18 +24,20 @@ SPACING = 882  # 7 rotor diameters (126m * 7)
 for row in range(4):
     for col in range(5):
         idx = row * 5 + col + 1
-        SAMPLE_TURBINES.append({
-            "turbine_id": f"T{idx:02d}",
-            "name": f"Turbine {idx}",
-            "latitude": 55.5 + (row - 1.5) * 0.008,
-            "longitude": 3.5 + (col - 2) * 0.012,
-            "x": (col - 2) * SPACING,
-            "y": (row - 1.5) * SPACING,
-            "hub_height": 90.0,
-            "rotor_diameter": 126.0,
-            "rated_power_kw": 3600.0,
-            "thrust_coefficient": 0.8,
-        })
+        SAMPLE_TURBINES.append(
+            {
+                "turbine_id": f"T{idx:02d}",
+                "name": f"Turbine {idx}",
+                "latitude": 55.5 + (row - 1.5) * 0.008,
+                "longitude": 3.5 + (col - 2) * 0.012,
+                "x": (col - 2) * SPACING,
+                "y": (row - 1.5) * SPACING,
+                "hub_height": 90.0,
+                "rotor_diameter": 126.0,
+                "rated_power_kw": 3600.0,
+                "thrust_coefficient": 0.8,
+            }
+        )
 
 # Prevailing SW wind rose (North Sea typical)
 SAMPLE_WIND_ROSE = {
@@ -128,18 +129,20 @@ ONSHORE_SPACING = 756  # 6 rotor diameters
 for row in range(3):
     for col in range(4):
         idx = row * 4 + col + 1
-        ONSHORE_TURBINES.append({
-            "turbine_id": f"WT{idx:02d}",
-            "name": f"Wind Turbine {idx}",
-            "latitude": 52.0 + (row - 1) * 0.007,
-            "longitude": -1.5 + (col - 1.5) * 0.010,
-            "x": (col - 1.5) * ONSHORE_SPACING,
-            "y": (row - 1) * ONSHORE_SPACING,
-            "hub_height": 80.0,
-            "rotor_diameter": 126.0,
-            "rated_power_kw": 3600.0,
-            "thrust_coefficient": 0.8,
-        })
+        ONSHORE_TURBINES.append(
+            {
+                "turbine_id": f"WT{idx:02d}",
+                "name": f"Wind Turbine {idx}",
+                "latitude": 52.0 + (row - 1) * 0.007,
+                "longitude": -1.5 + (col - 1.5) * 0.010,
+                "x": (col - 1.5) * ONSHORE_SPACING,
+                "y": (row - 1) * ONSHORE_SPACING,
+                "hub_height": 80.0,
+                "rotor_diameter": 126.0,
+                "rated_power_kw": 3600.0,
+                "thrust_coefficient": 0.8,
+            }
+        )
 
 
 async def seed_database(session: AsyncSession) -> dict:
@@ -150,14 +153,14 @@ async def seed_database(session: AsyncSession) -> dict:
         "wind_roses": 0,
         "power_curves": 0,
     }
-    
+
     # Create North Sea wind farm
     north_sea_farm = WindFarm(
         id=str(uuid4()),
         **SAMPLE_WIND_FARM,
     )
     session.add(north_sea_farm)
-    
+
     # Add turbines
     for turbine_data in SAMPLE_TURBINES:
         turbine = Turbine(
@@ -167,16 +170,16 @@ async def seed_database(session: AsyncSession) -> dict:
         )
         session.add(turbine)
         results["turbines"] += 1
-    
+
     results["wind_farms"] += 1
-    
+
     # Create onshore wind farm
     onshore_farm = WindFarm(
         id=str(uuid4()),
         **ONSHORE_WIND_FARM,
     )
     session.add(onshore_farm)
-    
+
     for turbine_data in ONSHORE_TURBINES:
         turbine = Turbine(
             id=str(uuid4()),
@@ -185,9 +188,9 @@ async def seed_database(session: AsyncSession) -> dict:
         )
         session.add(turbine)
         results["turbines"] += 1
-    
+
     results["wind_farms"] += 1
-    
+
     # Create wind rose
     wind_rose = WindRose(
         id=str(uuid4()),
@@ -195,7 +198,7 @@ async def seed_database(session: AsyncSession) -> dict:
     )
     session.add(wind_rose)
     results["wind_roses"] += 1
-    
+
     # Create power curve
     power_curve = PowerCurve(
         id=str(uuid4()),
@@ -203,9 +206,9 @@ async def seed_database(session: AsyncSession) -> dict:
     )
     session.add(power_curve)
     results["power_curves"] += 1
-    
+
     await session.commit()
-    
+
     return results
 
 
@@ -213,17 +216,17 @@ async def run_seed():
     """Run the database seeding."""
     print("Initializing database...")
     await init_db()
-    
+
     print("Seeding database with fixtures...")
     async with async_session_maker() as session:
         results = await seed_database(session)
-    
+
     print(f"✅ Seeded database:")
     print(f"   - {results['wind_farms']} wind farms")
     print(f"   - {results['turbines']} turbines")
     print(f"   - {results['wind_roses']} wind roses")
     print(f"   - {results['power_curves']} power curves")
-    
+
     return results
 
 
