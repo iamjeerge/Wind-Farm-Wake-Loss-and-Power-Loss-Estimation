@@ -204,8 +204,8 @@ The layout optimization employs a genetic algorithm with the following character
 ### B. Docker Deployment
 
 ```bash
-git clone https://github.com/user/wind-wake-loss-power-loss.git
-cd wind-wake-loss-power-loss
+git clone https://github.com/iamjeerge/Wind-Farm-Wake-Loss-and-Power-Loss-Estimation.git
+cd Wind-Farm-Wake-Loss-and-Power-Loss-Estimation
 docker compose up --build
 ```
 
@@ -319,4 +319,4 @@ Test coverage targets: >90% for core wake model implementations.
 
 **License:** MIT License - See LICENSE file for details.
 
-**Repository:** https://github.com/user/wind-wake-loss-power-loss
+**Repository:** https://github.com/iamjeerge/Wind-Farm-Wake-Loss-and-Power-Loss-Estimation
