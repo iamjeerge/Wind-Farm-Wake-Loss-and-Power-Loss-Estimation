@@ -59,7 +59,10 @@ class PowerCalculator:
         )
 
         # Calculate losses
-        power_loss = free_stream_power - wake_affected_power
+        # Floored at zero: on the cut-out ramp a waked turbine (slower wind) can out-produce a
+        # free-stream one, and a negative loss fails TurbinePowerResult's ge=0 validation.
+        # Energy totals use the powers themselves, so they are unaffected.
+        power_loss = max(0.0, free_stream_power - wake_affected_power)
         if free_stream_power > 0:
             power_loss_percent = (power_loss / free_stream_power) * 100
         else:

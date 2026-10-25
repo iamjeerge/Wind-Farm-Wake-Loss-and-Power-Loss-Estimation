@@ -50,7 +50,8 @@ class FarmAggregator:
         total_free_stream = sum(t.free_stream_power for t in turbine_results)
         total_wake_affected = sum(t.wake_affected_power for t in turbine_results)
         total_rated = sum(t.rated_power for t in turbine_results)
-        total_loss = total_free_stream - total_wake_affected
+        # Floored at zero for the same cut-out-ramp reason as PowerCalculator.calculate_power
+        total_loss = max(0.0, total_free_stream - total_wake_affected)
 
         # Calculate percentages
         if total_free_stream > 0:

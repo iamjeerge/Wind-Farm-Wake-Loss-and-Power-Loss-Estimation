@@ -1,5 +1,6 @@
 """Genetic algorithm optimizer for wind farm layout."""
 
+import math
 from dataclasses import dataclass, field
 from typing import Callable, List, Optional, Tuple
 import numpy as np
@@ -247,28 +248,41 @@ class GeneticOptimizer:
         self, positions: np.ndarray, template: TurbineLayout
     ) -> TurbineLayout:
         """Convert positions back to layout."""
+        # TurbineLayout recomputes x/y from lat/lon on validation, so the new positions have to be
+        # written back as lat/lon - around a reference pinned to the template's, or the frame moves.
+        ref_lat = template.reference_latitude
+        ref_lon = template.reference_longitude
+        if ref_lat is None:
+            ref_lat = sum(t.latitude for t in template.turbines) / len(template.turbines)
+        if ref_lon is None:
+            ref_lon = sum(t.longitude for t in template.turbines) / len(template.turbines)
+        earth_radius = 6371000
+
         new_turbines = []
         for i, t in enumerate(template.turbines):
+            x, y = float(positions[i, 0]), float(positions[i, 1])
             new_turbines.append(
                 Turbine(
                     id=t.id,
                     name=t.name,
-                    latitude=t.latitude,  # Keep original lat/lon for reference
-                    longitude=t.longitude,
+                    latitude=ref_lat + math.degrees(y / earth_radius),
+                    longitude=ref_lon
+                    + math.degrees(x / (earth_radius * math.cos(math.radians(ref_lat)))),
                     x=float(positions[i, 0]),
                     y=float(positions[i, 1]),
                     hub_height=t.hub_height,
                     rotor_diameter=t.rotor_diameter,
                     rated_power=t.rated_power,
                     thrust_coefficient=t.thrust_coefficient,
+                    power_curve=t.power_curve,
                 )
             )
 
         return TurbineLayout(
             turbines=new_turbines,
             name=f"{template.name}_optimized",
-            reference_latitude=template.reference_latitude,
-            reference_longitude=template.reference_longitude,
+            reference_latitude=ref_lat,
+            reference_longitude=ref_lon,
         )
 
     def _initialize_population(self, initial: np.ndarray) -> List[np.ndarray]:

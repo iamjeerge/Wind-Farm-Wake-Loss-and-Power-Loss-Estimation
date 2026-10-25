@@ -4,7 +4,9 @@ from typing import Optional
 from fastapi import APIRouter, BackgroundTasks, HTTPException
 from pydantic import BaseModel, Field
 
+from app.models.simulation import SimulationConfig
 from app.models.turbine import TurbineLayout
+from app.models.wake import WakeModelType, WakeParameters
 from app.models.wind import WindData
 from app.services.optimization import GeneticOptimizer, LayoutConstraints
 from app.services.optimization.genetic_optimizer import (
@@ -15,8 +17,6 @@ from app.services.optimization.genetic_optimizer import (
 )
 from app.services.simulation.simulator import Simulator
 from app.services.simulation.aep_calculator import AEPCalculator
-from app.services.wake import JensenWakeModel, BastankhahWakeModel
-from app.services.power import PowerCalculator
 
 
 router = APIRouter(prefix="/optimization", tags=["Optimization"])
@@ -67,32 +67,21 @@ def create_fitness_function(
 ):
     """Create fitness function for optimizer."""
 
+    params = WakeParameters(
+        model_type=WakeModelType.JENSEN if wake_model == "jensen" else WakeModelType.BASTANKHAH,
+        wake_decay_coefficient=wake_decay,
+    )
+    simulator = Simulator(SimulationConfig(wake_params=params, include_wake_geometry=False))
+    aep_calc = AEPCalculator()
+
     def fitness_fn(layout: TurbineLayout) -> tuple[float, float, float]:
-        # Create wake model
-        if wake_model == "jensen":
-            model = JensenWakeModel(wake_decay_coefficient=wake_decay)
-        else:
-            model = BastankhahWakeModel(wake_decay_coefficient=wake_decay)
-
-        # Create calculator
-        power_calc = PowerCalculator()
-        simulator = Simulator(
-            wake_model=model,
-            power_calculator=power_calc,
-        )
-        aep_calc = AEPCalculator(simulator)
-
-        # Calculate AEP
-        result = aep_calc.calculate_aep(
-            layout=layout,
-            wind_rose=wind_data.wind_rose,
-            weibull=wind_data.weibull,
-        )
+        results = simulator.run(layout, wind_data)
+        result = aep_calc.calculate_aep(results, layout, wind_data)
 
         return (
-            result.net_aep_gwh,
+            result.net_aep_mwh / 1000,
             result.wake_loss_percent,
-            result.capacity_factor,
+            result.net_capacity_factor,
         )
 
     return fitness_fn

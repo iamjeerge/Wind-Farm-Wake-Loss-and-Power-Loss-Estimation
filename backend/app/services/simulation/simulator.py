@@ -80,8 +80,8 @@ class Simulator:
         directional_results: list[DirectionalResult] = []
 
         for i, direction in enumerate(directions):
-            # Get probability for this direction
-            direction_prob = wind_data.wind_rose.get_probability(direction)
+            # Get probability for this direction bin
+            direction_prob = self._bin_probability(wind_data, direction)
 
             # Skip directions with negligible probability
             if direction_prob < 0.001:
@@ -247,6 +247,26 @@ class Simulator:
                     wake_results[str(downstream.id)].append(wake_result)
 
         return wake_results
+
+    def _bin_probability(self, wind_data: WindData, direction: float) -> float:
+        """
+        Share of the wind rose that falls in the direction bin centred on `direction`.
+
+        Each sector's probability is split by how much of it overlaps the bin. Using the whole
+        sector probability for every bin inside it counts sectors more than once (x1.5 for 10°
+        bins on a 15° rose) and inflates AEP by the same factor.
+        """
+        half = self.config.direction_step / 2
+        total = 0.0
+        for entry in wind_data.wind_rose.entries:
+            lo = entry.direction - entry.sector_width / 2
+            for shift in (-360.0, 0.0, 360.0):
+                overlap = min(direction + half, lo + entry.sector_width + shift) - max(
+                    direction - half, lo + shift
+                )
+                if overlap > 0:
+                    total += entry.probability * overlap / entry.sector_width
+        return total
 
     def _generate_direction_bins(self) -> list[float]:
         """Generate direction bins for simulation."""
